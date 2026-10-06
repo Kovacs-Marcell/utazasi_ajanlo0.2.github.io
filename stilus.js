@@ -1046,6 +1046,7 @@ function fizeteshez(){
   const telefon = document.getElementById('foglalasTelefon').value.trim();
   if(!nev || !email || !telefon){ alert('Kérjük, töltsd ki az utas adatait!'); return; }
   if(!email.includes('@') || !email.includes('.')){ alert('Kérjük, érvényes e-mail címet adj meg!'); return; }
+  if(!/^[0-9]+$/.test(telefon)){ alert('A telefonszám csak számokat tartalmazhat!'); return;}
   document.getElementById('fizetendoOsszeg').textContent = arFormazas(vegsoOsszeg);
   oldalMutatas('oldalFizetes');
 }
@@ -1082,15 +1083,19 @@ function kartyaSzamFrissit(input){
   document.getElementById('kartyaSzamKijelzo').textContent = formazott || '•••• •••• •••• ••••';
 }
 function kartyaNevFrissit(input){
-  const ertek = input.value.toUpperCase();
+  const ertek = input.value.replace(/[^a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ\s]/g, '');
   input.value = ertek;
-  document.getElementById('kartyaNevKijelzo').textContent = ertek || 'NÉV VEZETÉKNÉV';
+  document.getElementById('kartyaNevKijelzo').textContent = ertek || 'VEZETÉKNÉV NÉV';
 }
 function kartyaLejaratFrissit(input){
   let ertek = input.value.replace(/\D/g, '').substring(0, 4);
   if(ertek.length >= 3) ertek = ertek.substring(0, 2) + '/' + ertek.substring(2);
   input.value = ertek;
   document.getElementById('kartyaLejaratKijelzo').textContent = ertek || 'HH/ÉÉ';
+}
+function kartyaCvvFrissit(input){
+  let ertek = input.value.replace(/\D/g, '').substring(0, 4);
+  input.value = ertek;
 }
 function fizetesFeldolgoz(){
   if(!kivalasztottFizetesiMod){ alert('Kérjük, válassz fizetési módot!'); return; }
@@ -1100,9 +1105,9 @@ function fizetesFeldolgoz(){
     const lejarat = document.getElementById('kartyaLejarat').value;
     const cvv = document.getElementById('kartyaCvv').value;
     if(szam.length < 16){ alert('Kérjük, add meg a teljes kártyaszámot!'); return; }
-    if(!nev){ alert('Kérjük, add meg a kártyabirtokos nevét!'); return; }
+    if(!nev|| !/^[a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ\s]+$/.test(nev)){ alert('Kérjük, érvényes kártyabirtokos nevet adj meg!'); return; }
     if(!/^\d{2}\/\d{2}$/.test(lejarat)){ alert('Kérjük, add meg a lejárati dátumot HH/ÉÉ formátumban!'); return; }
-    if(cvv.length < 3){ alert('Kérjük, add meg a CVV kódot!'); return; }
+    if(!/^\d{3}$/.test(cvv)){ alert('Kérjük, add meg a 3 jegyű CVC/CVV kódot!'); return; }
   }
   szamlaGeneralas();
   oldalMutatas('oldalSzamla');
@@ -1152,5 +1157,17 @@ function szamlaEmailben(){
   document.getElementById('emailElkuldveUzenet').classList.add('mutat');
   setTimeout(() => document.getElementById('emailElkuldveUzenet').classList.remove('mutat'), 6000);
 }
+
+const indulasDatum = document.getElementById('keresesTol');
+const visszautDatum = document.getElementById('keresesIg');
+
+const ma = new Date().toISOString().split('T')[0];
+
+indulasDatum.min = ma;
+visszautDatum.min = ma;
+
+indulasDatum.addEventListener('change', function(){
+    visszautDatum.min = this.value;
+});
 
 kartyakRender();

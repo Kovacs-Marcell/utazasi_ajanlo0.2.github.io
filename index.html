@@ -46,11 +46,11 @@
           </div>
           <div class="kereses-elem">
             <label>Indulás</label>
-            <input type="date" id="keresesTol" value="2026-10-15">
+            <input type="date" id="keresesTol">
           </div>
           <div class="kereses-elem">
             <label>Visszaút</label>
-            <input type="date" id="keresesIg" value="2026-10-22">
+            <input type="date" id="keresesIg">
           </div>
           <div class="kereses-elem">
             <label>Utasok</label>
@@ -443,7 +443,7 @@
           </div>
           <div class="urlap-mezo">
             <label>CCV</label>
-            <input type="text" id="kartyaCvv" placeholder="123" maxlength="4">
+            <input type="text" id="kartyaCvv" placeholder="123" maxlength="3" oninput="kartyaCvvFrissit(this)">
           </div>
         </div>
       </div>
